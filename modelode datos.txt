@@ -1,0 +1,59 @@
+Persona
+idpersona
+idusuario
+numero de cedula
+nombres
+apellidos
+fecha de nacimiento
+sexo
+
+Usuario
+nombreusuario
+email
+password
+
+Tipos de terapias
+id tipo de terapia
+tituloterapia
+descricpion
+procedimiento
+
+Especialista
+nombres
+apellidos
+foto
+especialidad
+precio
+rating
+experiencia
+biografia
+
+Horario_especialista
+id
+fecha
+dia
+Hora
+
+Sala
+idsala
+estatus
+descripcion
+
+Sesion
+idsala
+idespecialista
+idpersona
+idhorario
+estatus de sala
+descricpion
+
+reserva
+idpersona
+especialista 
+idhorario
+monto
+codigopago 
+
+ (168.0.162.152) 
+ yosoyproferika
+ Devs3110.
