@@ -48,7 +48,7 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign(
       { id: usuario._id, email: usuario.email },
-      'tu_clave_secreta', // Aquí puedes cambiar la clave secreta para firmar el JWT
+      process.env.JWT_SECRET, // Aquí puedes cambiar la clave secreta para firmar el JWT
       { expiresIn: '1h' }
     );
 
