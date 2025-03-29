@@ -27,7 +27,7 @@ const nodemailer = require('nodemailer');
 
 // Ruta para crear un nuevo usuario (Registro)
 router.post('/register', async (req, res) => {
-  const { email, password, idusuario, nombreusuario } = req.body;
+  const { email, password, nombreusuario } = req.body;
   console.log('Estamos en registro');
   try {
     const usuarioExistente = await Usuario.findOne({ email });
@@ -106,7 +106,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obtener un usuario por idusuario
-router.get('/:idusuario', async (req, res) => {
+router.get('/:_id', async (req, res) => {
   try {
     const usuario = await Usuario.findOne({ idusuario: req.params.idusuario });
     if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
