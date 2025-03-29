@@ -79,7 +79,6 @@ router.post('/login', async (req, res) => {
     res.status(200).json({
       token,
       usuario: {
-        _id: usuario._id,
         email: usuario.email,
         nombreusuario: usuario.nombreusuario,
         apellidos: usuario.apellidos,
@@ -93,7 +92,6 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 //Metódo para  completar datos de registro y Ruta para actualizar los datos del usuario
 router.put('/update', async (req, res) => {
