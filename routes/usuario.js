@@ -80,7 +80,15 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token });
+    res.status(200).json({ 
+      token,
+      id: usuario._id,
+      email: usuario.email,
+      nombreusuario: usuario.nombreusuario,
+      apellido: usuario.apellidos,
+      sexo: usuario.sexo,
+      fechanacimiento: usuario.fechanacimiento
+    });
 
   } catch (error) {
     res.status(500).json({ error: error.message });
