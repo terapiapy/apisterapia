@@ -68,56 +68,25 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Contraseña incorrecta' });
     }
 
-    // Generar el token
     const token = jwt.sign(
-      { id: usuario._id, email: usuario.email },
+      { id: usuario._id,
+        email: usuario.email,
+        nombre: usuario.nombreusuario,
+        apellido: usuario.apellidos,
+        sexo: usuario.sexo,
+        fechanacimiento: usuario.fechanacimiento,
+      },
       process.env.JWT_SECRET, // Aquí puedes cambiar la clave secreta para firmar el JWT
       { expiresIn: '1h' }
     );
 
-    // Devolver tanto el token como los datos del usuario
-    res.status(200).json({
-      token,
-      usuario: {
-        email: usuario.email,
-        nombreusuario: usuario.nombreusuario,
-        apellidos: usuario.apellidos,
-        cedula: usuario.cedula,
-        fechanacimiento: usuario.fechanacimiento,
-        nombres: usuario.nombres,
-        sexo: usuario.sexo,
-      }
-    });
+    res.status(200).json({ token });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
-//Metódo para  completar datos de registro y Ruta para actualizar los datos del usuario
-router.put('/update', async (req, res) => {
-  const { nombres, apellidos, cedula, fechanacimiento, sexo } = req.body;
-  const { idusuario } = req.body;  // Se asume que el `idusuario` está en el cuerpo de la solicitud
-
-  try {
-    const usuario = await Usuario.findOne({ idusuario });
-    
-    if (!usuario) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-
-    // Actualizar solo los campos que han sido enviados
-    if (nombres) usuario.nombres = nombres;
-    if (apellidos) usuario.apellidos = apellidos;
-    if (cedula) usuario.cedula = cedula;
-    if (fechanacimiento) usuario.fechanacimiento = fechanacimiento;
-    if (sexo) usuario.sexo = sexo;
-
-    await usuario.save();
-    res.status(200).json({ message: 'Perfil actualizado correctamente' });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+//Metódo para  completar datos de registro 
 
 // Obtener todos los usuarios
 router.get('/', async (req, res) => {
