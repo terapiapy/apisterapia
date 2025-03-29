@@ -68,19 +68,32 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Contraseña incorrecta' });
     }
 
+    // Generar el token
     const token = jwt.sign(
       { id: usuario._id, email: usuario.email },
       process.env.JWT_SECRET, // Aquí puedes cambiar la clave secreta para firmar el JWT
       { expiresIn: '1h' }
     );
 
-    // Ahora enviamos tanto el usuario como el token
-    res.status(200).json({ token, usuario });
-
+    // Devolver tanto el token como los datos del usuario
+    res.status(200).json({
+      token,
+      usuario: {
+        _id: usuario._id,
+        email: usuario.email,
+        nombreusuario: usuario.nombreusuario,
+        apellidos: usuario.apellidos,
+        cedula: usuario.cedula,
+        fechanacimiento: usuario.fechanacimiento,
+        nombres: usuario.nombres,
+        sexo: usuario.sexo,
+      }
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 //Metódo para  completar datos de registro y Ruta para actualizar los datos del usuario
 router.put('/update', async (req, res) => {
