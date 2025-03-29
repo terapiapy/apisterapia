@@ -7,6 +7,11 @@ const UsuarioSchema = new mongoose.Schema({
   password: { type: String, required: true },
   idusuario: { type: Number, required: true, unique: true },
   nombreusuario: { type: String, required: true },
+  nombres: { type: String },
+  apellidos: { type: String },
+  cedula: { type: String },
+  fechanacimiento: { type: String },
+  sexo: { type: String, enum: ['M', 'F'] },
 });
 
 // Encriptar la contraseña antes de guardar (si es nueva o modificada)

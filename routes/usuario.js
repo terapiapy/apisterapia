@@ -2,6 +2,28 @@ const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/usuarioModel');
 const jwt = require('jsonwebtoken'); // Para generar el token de autenticación
+const nodemailer = require('nodemailer');
+
+// Función para enviar correo
+/*const enviarCorreoVerificacion = async (email, codigo) => {
+    let transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'tuCorreo@gmail.com', // Usa tu correo de Gmail
+        pass: 'tuContraseñaDeAplicación', // Usa una contraseña de aplicación (más segura)
+      },
+    });
+
+    let info = await transporter.sendMail({
+      from: '"Terapia" <tuCorreo@gmail.com>',
+      to: email, // correo del usuario
+      subject: 'Código de verificación',
+      text: `Tu código de verificación es: ${codigo}`,
+      html: `<b>Tu código de verificación es: ${codigo}</b>`,
+    });
+
+    console.log('Mensaje enviado: %s', info.messageId);
+};*/
 
 // Ruta para crear un nuevo usuario (Registro)
 router.post('/register', async (req, res) => {
@@ -58,6 +80,33 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+//Metódo para  completar datos de registro 
+// Ruta para actualizar los datos del usuario
+router.put('/update', async (req, res) => {
+  const { nombres, apellidos, cedula, fechanacimiento, sexo } = req.body;
+  const { idusuario } = req.body;  // Se asume que el `idusuario` está en el cuerpo de la solicitud
+
+  try {
+    const usuario = await Usuario.findOne({ idusuario });
+    
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Actualizar solo los campos que han sido enviados
+    if (nombres) usuario.nombres = nombres;
+    if (apellidos) usuario.apellidos = apellidos;
+    if (cedula) usuario.cedula = cedula;
+    if (fechanacimiento) usuario.fechanacimiento = fechanacimiento;
+    if (sexo) usuario.sexo = sexo;
+
+    await usuario.save();
+    res.status(200).json({ message: 'Perfil actualizado correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Obtener todos los usuarios
 router.get('/', async (req, res) => {
   try {
