@@ -11,9 +11,10 @@ const UsuarioSchema = new mongoose.Schema({
   cedula: { type: String },
   fechanacimiento: { type: String },
   sexo: { type: String, enum: ['M', 'F'] },
+  fotousuario: { type: String } // Aquí se almacena la URL de la imagen
 });
 
-// Encriptar la contraseña antes de guardar (si es nueva o modificada)
+// Encriptar la contraseña antes de guardar
 UsuarioSchema.pre('save', async function(next) {
   if (this.isModified('password')) {
     const salt = await bcrypt.genSalt(10);
