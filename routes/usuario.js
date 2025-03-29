@@ -74,14 +74,15 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1h' }
     );
 
-    res.status(200).json({ token });
+    // Ahora enviamos tanto el usuario como el token
+    res.status(200).json({ token, usuario });
 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-//Metódo para  completar datos de registro 
-// Ruta para actualizar los datos del usuario
+
+//Metódo para  completar datos de registro y Ruta para actualizar los datos del usuario
 router.put('/update', async (req, res) => {
   const { nombres, apellidos, cedula, fechanacimiento, sexo } = req.body;
   const { idusuario } = req.body;  // Se asume que el `idusuario` está en el cuerpo de la solicitud
