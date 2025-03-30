@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Especialista = require('../models/especialistaModel');
-const Tipoterapia = require('../models/tipoterapiaModel');
+const Tipoterapia = require('../models/tipoTerapiaModel');
 // 📌 Crear un nuevo especialista (POST)
 router.post('/agregar', async (req, res) => {
   const { idtipo, nombresespecialista, apellidosespecialista, foto, especialidad, precio, rating, experiencia, biografia } = req.body;
