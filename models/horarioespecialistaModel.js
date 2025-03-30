@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 // Definir el esquema para la colección horario_especialista
 const horarioEspecialistaSchema = new mongoose.Schema({
-  idhorario: { type: Number, required: true, unique: true },
   idespecialista: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Especialista', // Relacionamos con el modelo de especialista

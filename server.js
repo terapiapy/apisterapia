@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 
-const personasRoutes = require('./routes/persona'); 
+
 const usuariosRoutes = require('./routes/usuario'); 
 const especialistasRoutes = require('./routes/especialista'); 
 const tipoTerapiasRoutes = require('./routes/tipoTerapia'); 
@@ -18,13 +18,20 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 // Conexión a MongoDB
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ Conexión exitosa a MongoDB Atlas'))
-  .catch(err => console.error('❌ Error al conectar con MongoDB:', err));
+mongoose.connect(process.env.MONGODB_URI, { 
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => {
+    console.log("Conectado a la base de datos 'apisterapia'");
+  })
+  .catch((error) => {
+    console.error('Error al conectar a la base de datos', error);
+  });
 
 // Rutas
 try {
-  app.use('/api/personas', personasRoutes);
+
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/especialistas', especialistasRoutes);
   app.use('/api/tipoterapias', tipoTerapiasRoutes);
@@ -48,5 +55,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`🚀 Servidor corriendo en https://apisterapia.onrender.com`);
+  //console.log(`🚀 Servidor corriendo en https://apisterapia.onrender.com`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
 });

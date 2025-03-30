@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 
 const tipoterapiaSchema = new mongoose.Schema({
-  idtipo: { type: Number, required: true, unique: true },
   tituloterapia: { type: String, required: true },
   descripcion: { type: String, required: true },
-  procedimiento: { type: String, required: true }
+  procedimiento: { type: String, required: true },
+  imagen: { type: String } // URL de la imagen
 });
 
-module.exports = mongoose.model('Tipoterapia', tipoterapiaSchema, 'tipoterapia');
+// Verificamos si el modelo 'Tipoterapia' ya existe, si no, lo definimos
+const Tipoterapia = mongoose.models.Tipoterapia || mongoose.model('Tipoterapia', tipoterapiaSchema, 'tipoterapia');
+
+module.exports = Tipoterapia;
