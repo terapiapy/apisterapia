@@ -2,28 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Usuario = require('../models/usuarioModel');
 const jwt = require('jsonwebtoken'); // Para generar el token de autenticación
-const nodemailer = require('nodemailer');
-
-// Función para enviar correo
-/*const enviarCorreoVerificacion = async (email, codigo) => {
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'tuCorreo@gmail.com', // Usa tu correo de Gmail
-        pass: 'tuContraseñaDeAplicación', // Usa una contraseña de aplicación (más segura)
-      },
-    });
-
-    let info = await transporter.sendMail({
-      from: '"Terapia" <tuCorreo@gmail.com>',
-      to: email, // correo del usuario
-      subject: 'Código de verificación',
-      text: `Tu código de verificación es: ${codigo}`,
-      html: `<b>Tu código de verificación es: ${codigo}</b>`,
-    });
-
-    console.log('Mensaje enviado: %s', info.messageId);
-};*/
 
 // Ruta para crear un nuevo usuario (Registro)
 router.post('/register', async (req, res) => {
@@ -126,5 +104,27 @@ router.get('/email/:email', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+router.put('/update/:_id', async (req, res) => {
+  console.log('🚀 Se recibió una petición PUT para actualizar usuario con ID:', req.params.id);
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const usuarioActualizado = await Usuario.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+
+    if (!usuarioActualizado) {
+      console.log('❌ Usuario no encontrado');
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    console.log('✅ Usuario actualizado con éxito:', usuarioActualizado);
+    res.status(200).json({ message: 'Usuario actualizado con éxito', usuario: usuarioActualizado });
+  } catch (error) {
+    console.error('🔥 Error al actualizar usuario:', error);
+    res.status(500).json({ message: 'Error al actualizar el usuario' });
+  }
+});
+
 
 module.exports = router;
