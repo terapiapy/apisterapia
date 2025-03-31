@@ -39,7 +39,24 @@ router.post('/agregar', async (req, res) => {
   }
 });
 
+//Metodo para hacer busqueda por nombres, apellidos, tituloterapia, especialidad o precio
+//uso GET http://localhost:3000/api/especialistas/buscar?especialidad=Psicología&precio=150
 
+router.get('/buscar', async (req, res) => {
+  const { nombresespecialista, apellidosespecialista, tituloterapia, especialidad, precio } = req.query;
+
+  let filtro = {};
+  if (nombresespecialista) filtro.nombresespecialista = nombresespecialista;
+  if (apellidosespecialista) filtro.apellidosespecialista = apellidosespecialista;
+  if (especialidad) filtro.especialidad = especialidad;
+  if (precio) filtro.precio = precio;
+
+  // Realizar la consulta con los filtros definidos
+  const especialistas = await Especialista.find(filtro).populate('idtipo', 'tituloterapia');
+  res.json(especialistas);
+});
+
+//Muestra un listado de especialistas sin filtros 
 router.get('/', async (req, res) => {
   try {
     const especialistas = await Especialista.find().populate('idtipo', 'tituloterapia'); // Relación con Tipoterapia
@@ -50,7 +67,7 @@ router.get('/', async (req, res) => {
 });
 
 // 📌 Obtener un especialista por _id (GET)
-router.get('/:id', async (req, res) => {
+router.get('/porid/:id', async (req, res) => {
   try {
     const especialista = await Especialista.findById(req.params.id).populate('idtipo', 'tituloterapia');
     if (!especialista) return res.status(404).json({ error: 'Especialista no encontrado' });
@@ -59,6 +76,10 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+
+
+
 
 // 📌 Actualizar un especialista (PUT)
 router.put('/:id', async (req, res) => {

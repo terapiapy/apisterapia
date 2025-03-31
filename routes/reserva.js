@@ -3,32 +3,33 @@ const router = express.Router();
 const Reserva = require('../models/reservaModel');
 
 // Crear una nueva reserva
-router.post('/', async (req, res) => {
-  const { idreserva, idpersona, idespecialista, idhorario, monto, codigopago } = req.body;
+router.post('/crear', async (req, res) => {
+  const { idusuario, idespecialista, idhorario, monto, metodopago } = req.body;
 
-  try {
-    const reserva = new Reserva({
-      idreserva,
-      idpersona,
+  // Validar que el método de pago sea uno de los permitidos
+  const metodosPermitidos = ['billetera terapia', 'pagopar'];
+  if (!metodosPermitidos.includes(metodopago)) {
+      return res.status(400).json({ error: 'Método de pago no válido' });
+  }
+
+  const nuevaReserva = new Reserva({
+      idusuario,
       idespecialista,
       idhorario,
       monto,
-      codigopago
-    });
+      metodopago, // Guarda el método de pago seleccionado
+  });
 
-    await reserva.save();
-    res.status(201).json({ message: 'Reserva creada con éxito' });
-
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  await nuevaReserva.save();
+  res.status(201).json({ message: 'Reserva creada con éxito', reserva: nuevaReserva });
 });
+
 
 // Obtener todas las reservas
 router.get('/', async (req, res) => {
   try {
     const reservas = await Reserva.find() // Obtiene todas las reservas
-      .populate('idpersona', 'nombres apellidos') // Relacionar la colección Persona
+      .populate('idusuario', 'nombres apellidos') // Relacionar la colección Persona
       .populate('idespecialista', 'nombresespecialista apellidosespecialista') // Relacionar la colección Especialista
       .populate('idhorario', 'dia hora'); // Relacionar la colección Horario
 
@@ -42,7 +43,7 @@ router.get('/', async (req, res) => {
 router.get('/:idreserva', async (req, res) => {
   try {
     const reserva = await Reserva.findOne({ idreserva: req.params.idreserva })
-      .populate('idpersona', 'nombres apellidos')
+      .populate('idusuario', 'nombres apellidos')
       .populate('idespecialista', 'nombresespecialista apellidosespecialista')
       .populate('idhorario', 'dia hora');
 

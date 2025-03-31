@@ -7,7 +7,6 @@ const usuariosRoutes = require('./routes/usuario');
 const especialistasRoutes = require('./routes/especialista'); 
 const tipoTerapiasRoutes = require('./routes/tipoTerapia'); 
 const horariosEspecialistasRoutes = require('./routes/horarioEspecialista'); 
-const salasRoutes = require('./routes/sala'); 
 const sesionRoutes = require('./routes/sesion'); 
 const reservasRoutes = require('./routes/reserva'); 
 
@@ -36,7 +35,6 @@ try {
   app.use('/api/especialistas', especialistasRoutes);
   app.use('/api/tipoterapias', tipoTerapiasRoutes);
   app.use('/api/horarios', horariosEspecialistasRoutes);
-  app.use('/api/salas', salasRoutes);
   app.use('/api/sesiones', sesionRoutes);
   app.use('/api/reservas', reservasRoutes);
 } catch (error) {
