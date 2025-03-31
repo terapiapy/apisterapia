@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 // Definir el esquema para la colección sesion
 const sesionSchema = new mongoose.Schema({
-  idsala:  { type: mongoose.Schema.Types.ObjectId, ref: 'Sala', required: true }, // Relación con la colección Sala
-  idespecialista:  { type: mongoose.Schema.Types.ObjectId, ref: 'Especialsita', required: true },// Relación con la colección Especialista
-  idusuario: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario', required: true },// Relación con la colección Persona
-  descripcionsesion: { type: String, default: '' },
-  estadosesion: { type: String, enum: ['habilitado', 'cancelado', 'finalizado'], default: 'habilitado' },
-  idhorario:  { type: mongoose.Schema.Types.ObjectId, ref: 'HorarioEspecialista', required: true },// Relación con la colección Horario Especialista
+    idreserva: { type: mongoose.Schema.Types.ObjectId, ref: 'Reserva', required: true }, // Relación con la reserva
+    descripcionsesion: { type: String, default: '' },
+    estadosesion: { type: String, enum: ['habilitado', 'cancelado', 'finalizado'], default: 'habilitado' },
+    linkdellamada: { type: String, required: true }, // Enlace obligatorio para la llamada
+    resena: { type: String, default: '' }, // Reseña opcional
+    evaluacion: { type: Number, min: 1, max: 5 }, // Evaluación opcional entre 1 y 5
 });
 
 // Exportar el modelo

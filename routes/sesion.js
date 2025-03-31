@@ -4,82 +4,131 @@ const Sesion = require('../models/sesionModel');
 
 // Crear una nueva sesión
 router.post('/', async (req, res) => {
-  const { idsesion, idsala, idespecialista, idpersona, descripcionsesion, estadosesion, idhorario } = req.body;
+  const { idreserva, descripcionsesion, estadosesion, linkdellamada, resena, evaluacion } = req.body;
 
   try {
-    const sesion = new Sesion({
-      idsesion,
-      idsala,
-      idespecialista,
-      idpersona,
-      descripcionsesion,
-      estadosesion,
-      idhorario
-    });
+      const nuevaSesion = new Sesion({
+          idreserva, // Relación con la reserva
+          descripcionsesion,
+          estadosesion,
+          linkdellamada, // Campo obligatorio
+          resena: resena || '', // Campo opcional con valor por defecto
+          evaluacion: evaluacion || undefined, // Campo opcional
+      });
 
-    await sesion.save();
-    res.status(201).json({ message: 'Sesión creada con éxito' });
-
+      await nuevaSesion.save();
+      res.status(201).json({ message: 'Sesión creada con éxito', sesion: nuevaSesion });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
+  }
+});
+// Obtener sesiones por usuario
+router.get('/usuario/:idusuario', async (req, res) => {
+  try {
+      const idusuario = req.params.idusuario;
+
+      // Buscar sesiones pasadas y próximas basadas en el estado
+      const sesionesPasadas = await Sesion.find({ estadosesion: { $in: ['finalizado', 'cancelado'] } })
+          .populate({
+              path: 'idreserva',
+              match: { idusuario }, // Filtrar por usuario en la reserva
+              populate: [
+                  { path: 'idusuario', select: 'nombres apellidos' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
+                  { path: 'idhorario', select: 'dia hora' },
+              ],
+          });
+
+      const sesionesProximas = await Sesion.find({ estadosesion: 'habilitado' })
+          .populate({
+              path: 'idreserva',
+              match: { idusuario }, // Filtrar por usuario en la reserva
+              populate: [
+                  { path: 'idusuario', select: 'nombres apellidos' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
+                  { path: 'idhorario', select: 'dia hora' },
+              ],
+          });
+
+      res.json({ sesionesPasadas, sesionesProximas });
+  } catch (error) {
+      res.status(500).json({ error: error.message });
   }
 });
 
 // Obtener todas las sesiones
 router.get('/', async (req, res) => {
   try {
-    const sesiones = await Sesion.find().populate('idsala', 'descripcion estatus') // Relacionar la colección Sala
-      .populate('idespecialista', 'nombresespecialista apellidosespecialista') // Relacionar la colección Especialista
-      .populate('idpersona', 'nombres apellidos') // Relacionar la colección Persona
-      .populate('idhorario', 'dia hora'); // Relacionar la colección Horario
+      const sesiones = await Sesion.find()
+          .populate({
+              path: 'idreserva',
+              populate: [
+                  { path: 'idusuario', select: 'nombres apellidos' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
+                  { path: 'idhorario', select: 'dia hora' },
+              ],
+          });
 
-    res.json(sesiones); // Devuelve el listado de sesiones en formato JSON
+      res.json(sesiones);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
   }
 });
 
 // Obtener una sesión por id
-router.get('/:idsesion', async (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const sesion = await Sesion.findOne({ idsesion: req.params.idsesion })
-      .populate('idsala', 'descripcion')
-      .populate('idespecialista', 'nombresespecialista apellidosespecialista')
-      .populate('idpersona', 'nombres apellidos')
-      .populate('idhorario', 'dia hora');
-    
-    if (!sesion) return res.status(404).json({ error: 'Sesión no encontrada' });
-    res.json(sesion);
+      const sesion = await Sesion.findById(req.params.id)
+          .populate({
+              path: 'idreserva',
+              populate: [
+                  { path: 'idusuario', select: 'nombres apellidos' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
+                  { path: 'idhorario', select: 'dia hora' },
+              ],
+          });
+
+      if (!sesion) return res.status(404).json({ error: 'Sesión no encontrada' });
+
+      res.json(sesion);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
   }
 });
 
 // Actualizar una sesión
-router.put('/:idsesion', async (req, res) => {
-  try {
-    const sesionActualizada = await Sesion.findOneAndUpdate(
-      { idsesion: req.params.idsesion },
-      req.body,
-      { new: true } // Devuelve la sesión actualizada
-    );
+router.put('/:id', async (req, res) => {
+  const { estadosesion, resena, evaluacion } = req.body;
 
-    if (!sesionActualizada) return res.status(404).json({ error: 'Sesión no encontrada' });
-    res.json(sesionActualizada);
+  try {
+      const actualizacion = {};
+      if (estadosesion) actualizacion.estadosesion = estadosesion;
+      if (resena) actualizacion.resena = resena;
+      if (evaluacion) actualizacion.evaluacion = evaluacion;
+
+      const sesionActualizada = await Sesion.findByIdAndUpdate(req.params.id, actualizacion, { new: true });
+
+      if (!sesionActualizada) return res.status(404).json({ error: 'Sesión no encontrada' });
+
+      res.json(sesionActualizada);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
   }
 });
 
 // Eliminar una sesión
-router.delete('/:idsesion', async (req, res) => {
+router.delete('/:id', async (req, res) => {
   try {
-    const sesionEliminada = await Sesion.findOneAndDelete({ idsesion: req.params.idsesion });
-    if (!sesionEliminada) return res.status(404).json({ error: 'Sesión no encontrada' });
-    res.json({ mensaje: 'Sesión eliminada correctamente' });
+      const sesionEliminada = await Sesion.findByIdAndDelete(req.params.id);
+
+      if (!sesionEliminada) return res.status(404).json({ error: 'Sesión no encontrada' });
+
+      res.json({ mensaje: 'Sesión eliminada correctamente' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
   }
 });
+
+
 
 module.exports = router;

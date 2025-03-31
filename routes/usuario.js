@@ -48,10 +48,13 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign(
       { id: usuario._id,
         email: usuario.email,
-        nombre: usuario.nombreusuario,
+        nombreusuario: usuario.nombreusuario,
+        nombre: usuario.nombres,
         apellido: usuario.apellidos,
+        cedula: usuario.cedula,
         sexo: usuario.sexo,
         fechanacimiento: usuario.fechanacimiento,
+        foto: usuario.fotousuario,
       },
       process.env.JWT_SECRET, // Aquí puedes cambiar la clave secreta para firmar el JWT
       { expiresIn: '1h' }
@@ -62,9 +65,12 @@ router.post('/login', async (req, res) => {
       id: usuario._id,
       email: usuario.email,
       nombreusuario: usuario.nombreusuario,
+      cedula: usuario.cedula,
+      nombre: usuario.nombres,
       apellido: usuario.apellidos,
       sexo: usuario.sexo,
-      fechanacimiento: usuario.fechanacimiento
+      fechanacimiento: usuario.fechanacimiento,
+      foto: usuario.fotousuario
     });
 
   } catch (error) {

@@ -62,23 +62,26 @@ router.get('/:id', async (req, res) => {
 
 // Actualizar un tipo de terapia por _id (PUT)
 router.put('/:_id', async (req, res) => {
-  try {
-    const tipoterapiaActualizada = await Tipoterapia.findByIdAndUpdate(
-      req.params.id,
+  const tipoterapiaActualizada = await Tipoterapia.findByIdAndUpdate(
+      req.params._id, // Utilizamos _id para coincidir con la ruta
       req.body,
       { new: true } // Devuelve el tipo de terapia actualizado
-    );
-    if (!tipoterapiaActualizada) return res.status(404).json({ error: 'Tipo de terapia no encontrado' });
-    res.json(tipoterapiaActualizada);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  );
+  console.log(req.params._id);
+      console.log(req.body);
+  if (!tipoterapiaActualizada) {
+      return res.status(404).json({ error: 'Tipo de terapia no encontrado' });
   }
+
+  res.json(tipoterapiaActualizada);
 });
+
+
 
 // Eliminar un tipo de terapia por _id (DELETE)
 router.delete('/:_id', async (req, res) => {
   try {
-    const tipoterapiaEliminada = await Tipoterapia.findByIdAndDelete(req.params.id);
+    const tipoterapiaEliminada = await Tipoterapia.findByIdAndDelete(req.params._id);
     if (!tipoterapiaEliminada) return res.status(404).json({ error: 'Tipo de terapia no encontrado' });
     res.json({ mensaje: 'Tipo de terapia eliminado correctamente' });
   } catch (error) {
