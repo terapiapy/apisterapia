@@ -34,8 +34,8 @@ router.get('/usuario/:idusuario', async (req, res) => {
               match: { idusuario }, // Filtrar por usuario en la reserva
               populate: [
                   { path: 'idusuario', select: 'nombres apellidos' },
-                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
-                  { path: 'idhorario', select: 'dia hora' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista foto especialidad precio rating' },
+                  { path: 'idhorario', select: 'fecha dia hora' },
               ],
           });
 
@@ -45,8 +45,8 @@ router.get('/usuario/:idusuario', async (req, res) => {
               match: { idusuario }, // Filtrar por usuario en la reserva
               populate: [
                   { path: 'idusuario', select: 'nombres apellidos' },
-                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
-                  { path: 'idhorario', select: 'dia hora' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista foto especialidad precio rating' },
+                  { path: 'idhorario', select: 'fecha dia hora' },
               ],
           });
 
@@ -64,8 +64,8 @@ router.get('/', async (req, res) => {
               path: 'idreserva',
               populate: [
                   { path: 'idusuario', select: 'nombres apellidos' },
-                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
-                  { path: 'idhorario', select: 'dia hora' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista foto especialidad precio rating' },
+                  { path: 'idhorario', select: 'fecha dia hora' },
               ],
           });
 
@@ -83,8 +83,8 @@ router.get('/:id', async (req, res) => {
               path: 'idreserva',
               populate: [
                   { path: 'idusuario', select: 'nombres apellidos' },
-                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista' },
-                  { path: 'idhorario', select: 'dia hora' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista foto especialidad precio rating' },
+                  { path: 'idhorario', select: 'fecha dia hora' },
               ],
           });
 
