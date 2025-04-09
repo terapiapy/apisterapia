@@ -1,7 +1,7 @@
 require('dotenv').config();  
 const express = require('express');
 const mongoose = require('mongoose');
-
+const uploadRoutes = require('./routes/upload');
 
 const usuariosRoutes = require('./routes/usuario'); 
 const especialistasRoutes = require('./routes/especialista'); 
@@ -9,7 +9,7 @@ const tipoTerapiasRoutes = require('./routes/tipoTerapia');
 const horariosEspecialistasRoutes = require('./routes/horarioEspecialista'); 
 const sesionRoutes = require('./routes/sesion'); 
 const reservasRoutes = require('./routes/reserva'); 
-
+const uploadRoutes= require('./routes/upload');
 const app = express();
 const port = process.env.PORT || 3000;  
 
@@ -30,7 +30,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Rutas
 try {
-
+  app.use('/api/upload', uploadRoutes);
+  app.use('/uploads', express.static('uploads'));
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/especialistas', especialistasRoutes);
   app.use('/api/tipoterapias', tipoTerapiasRoutes);
