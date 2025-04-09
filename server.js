@@ -1,7 +1,6 @@
 require('dotenv').config();  
 const express = require('express');
 const mongoose = require('mongoose');
-const uploadRoutes = require('./routes/upload');
 
 const usuariosRoutes = require('./routes/usuario'); 
 const especialistasRoutes = require('./routes/especialista'); 
@@ -30,8 +29,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 // Rutas
 try {
-  app.use('/api/upload', uploadRoutes);
   app.use('/uploads', express.static('uploads'));
+  app.use('/api/upload', uploadRoutes);
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/especialistas', especialistasRoutes);
   app.use('/api/tipoterapias', tipoTerapiasRoutes);
