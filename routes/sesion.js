@@ -2,26 +2,36 @@ const express = require('express');
 const router = express.Router();
 const Sesion = require('../models/sesionModel');
 
-// Crear una nueva sesión
+// Función para generar un código aleatorio de letras y números
+    function generarCodigoAleatorio(longitud = 10) {
+        const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let codigo = '';
+        for (let i = 0; i < longitud; i++) {
+        codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+        }
+        return codigo;
+    }
+  
 router.post('/', async (req, res) => {
-  const { idreserva, descripcionsesion, estadosesion, linkdellamada, resena, evaluacion } = req.body;
-
-  try {
+    const { idreserva } = req.body;
+  
+    try {
       const nuevaSesion = new Sesion({
-          idreserva, // Relación con la reserva
-          descripcionsesion,
-          estadosesion,
-          linkdellamada, // Campo obligatorio
-          resena: resena || '', // Campo opcional con valor por defecto
-          evaluacion: evaluacion || undefined, // Campo opcional
+        idreserva, // Relación con la reserva
+        descripcionsesion: "Esta sesión será para dar seguimiento al proceso psicológico",
+        estadosesion: "habilitado",
+        linkdellamada: generarCodigoAleatorio(), // Código aleatorio
+        resena: '', // Inicialmente vacío
+        evaluacion: undefined // Inicialmente no evaluado
       });
-
+  
       await nuevaSesion.save();
       res.status(201).json({ message: 'Sesión creada con éxito', sesion: nuevaSesion });
-  } catch (error) {
+    } catch (error) {
       res.status(500).json({ error: error.message });
-  }
+    }
 });
+
 // Obtener sesiones por usuario
 router.get('/usuario/:idusuario', async (req, res) => {
   try {
