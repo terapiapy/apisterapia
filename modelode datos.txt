@@ -1,3 +1,14 @@
+1. credenciales de mongoDB atlas //terapiaonlinepy   //2ZibwTugDRAOFFng
+
+2. claudinary es para guardar las imagenes credenciales:
+CLOUDINARY_CLOUD_NAME=imagenesapis
+CLOUDINARY_API_KEY=162761949312671
+CLOUDINARY_API_SECRET=MyJxQ0boamqQBVDZE-Iuu9PRH6o
+
+3. Render abre con usuario github
+
+
+
 Persona
 idpersona
 idusuario
@@ -53,7 +64,3 @@ especialista
 idhorario
 monto
 codigopago 
-
- (168.0.162.152) 
- yosoyproferika
- Devs3110.

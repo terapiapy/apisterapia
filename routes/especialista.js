@@ -6,7 +6,7 @@ const Tipoterapia = require('../models/tipoTerapiaModel');
 // 📌 Crear un nuevo especialista (POST) con foto subida a Cloudinary
 router.post('/agregar', upload.single('foto'), async (req, res) => {
   try {
-    const { idtipo, nombresespecialista, apellidosespecialista, especialidad, precio, rating, experiencia, biografia } = req.body;
+    const { idtipo, nombresespecialista, apellidosespecialista, especialidad, precio, rating, experiencia, biografia, foto } = req.body;
     
     // Verificar que el idtipo sea válido
     const tipoterapiaExistente = await Tipoterapia.findById(idtipo);
@@ -26,7 +26,7 @@ router.post('/agregar', upload.single('foto'), async (req, res) => {
       idtipo,
       nombresespecialista,
       apellidosespecialista,
-      foto: fotoUrl, // Guardamos la URL de Cloudinary
+      foto, // Guardamos la URL de Cloudinary
       especialidad,
       precio,
       rating,

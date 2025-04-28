@@ -8,14 +8,13 @@ router.post('/crear', async (req, res) => {
   const nuevaReserva = new Reserva({
       idusuario,
       idespecialista,
-
       idhorario,
       monto,
       metodopago, // Guarda el método de pago seleccionado
   });
 
   await nuevaReserva.save();
-  res.status(201).json({ message: 'Reserva creada con éxito', reserva: nuevaReserva });
+  res.status(201).json({ success:true, message: 'Reserva creada con éxito', reserva: nuevaReserva });
 });
 
 

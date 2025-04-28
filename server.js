@@ -1,7 +1,6 @@
 require('dotenv').config();  
 const express = require('express');
 const mongoose = require('mongoose');
-
 const usuariosRoutes = require('./routes/usuario'); 
 const especialistasRoutes = require('./routes/especialista'); 
 const tipoTerapiasRoutes = require('./routes/tipoTerapia'); 
@@ -55,4 +54,5 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`🚀 Servidor corriendo en https://apisterapia.onrender.com`);
   //console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
+  
 });
