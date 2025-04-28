@@ -1,23 +1,24 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+const upload = require('../middlewares/uploads');
 const Tipoterapia = require('../models/tipoTerapiaModel');
 
 // Crear un nuevo tipo de terapia (POST)
-router.post('/agregar', async (req, res) => {
+router.post('/agregar', upload.single('imagen'), async (req, res) => {
   try {
-    const { tituloterapia, descripcion, procedimiento, imagen } = req.body;
+    const { tituloterapia, descripcion, procedimiento } = req.body;
+    const imagen = req.file ? req.file.path : null;
 
     const tipoterapia = new Tipoterapia({
       tituloterapia,
       descripcion,
       procedimiento,
-      imagen
+      imagen,
     });
 
     await tipoterapia.save();
     res.status(201).json({ message: 'Tipo de terapia creado con éxito', tipoterapia });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -74,6 +75,41 @@ router.put('/:_id', async (req, res) => {
   }
 
   res.json(tipoterapiaActualizada);
+});
+
+// Actualizar solo la imagen de un tipo de terapia (PUT)
+router.put('/actualizar-imagen/:_id', upload.single('imagen'), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validar ID
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
+
+    // Verificar si se envió un archivo
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se ha subido ninguna imagen' });
+    }
+
+    const imagen = req.file.path;
+
+    // Actualizar solo el campo imagen
+    const tipoterapiaActualizada = await Tipoterapia.findByIdAndUpdate(
+      id,
+      { imagen },
+      { new: true }
+    );
+
+    if (!tipoterapiaActualizada) {
+      return res.status(404).json({ error: 'Tipo de terapia no encontrado' });
+    }
+
+    res.json({ message: 'Imagen actualizada correctamente', tipoterapia: tipoterapiaActualizada });
+  } catch (error) {
+    console.error('❌ Error al actualizar imagen:', error.message);
+    res.status(500).json({ error: 'Error en el servidor', details: error.message });
+  }
 });
 
 

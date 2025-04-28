@@ -1,5 +1,7 @@
+const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+const upload = require('../middlewares/uploads');
 const Usuario = require('../models/usuarioModel');
 const jwt = require('jsonwebtoken'); // Para generar el token de autenticación
 
@@ -111,11 +113,28 @@ router.get('/email/:email', async (req, res) => {
   }
 });
 
-router.put('/update/:_id', async (req, res) => {
+// Actualizar datos personales del usuario
+router.put('/update/:id', async (req, res) => {
   console.log('🚀 Se recibió una petición PUT para actualizar usuario con ID:', req.params.id);
   try {
-    const { id } = req.params;
-    const updateData = req.body;
+    const { id } = req.params; // Aquí era _id, pero debe ser id porque tu ruta es '/update/:id'
+    const {
+      nombres,
+      apellidos,
+      cedula,
+      fechanacimiento,
+      sexo,
+      email // El email puede ser opcional
+    } = req.body;
+
+    const updateData = {
+      ...(nombres && { nombres }),
+      ...(apellidos && { apellidos }),
+      ...(cedula && { cedula }),
+      ...(fechanacimiento && { fechanacimiento }),
+      ...(sexo && { sexo }),
+      ...(email && { email })
+    };
 
     const usuarioActualizado = await Usuario.findByIdAndUpdate(id, { $set: updateData }, { new: true });
 
@@ -131,6 +150,46 @@ router.put('/update/:_id', async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar el usuario' });
   }
 });
+
+
+// Actualizar o agregar la foto del usuario
+router.put('/updatefoto/:_id', upload.single('fotousuario'), async (req, res) => {
+  console.log('📸 Se recibió una petición PUT para agregar o actualizar foto de usuario con _ID:', req.params._id);
+  
+  try {
+    const { _id } = req.params;
+
+    // Validar el ID
+    if (!mongoose.Types.ObjectId.isValid(_id)) {
+      return res.status(400).json({ error: 'ID inválido' });
+    }
+
+    // Verificar si se subió un archivo
+    if (!req.file) {
+      return res.status(400).json({ error: 'No se ha subido ninguna imagen' });
+    }
+
+    const fotousuario = req.file.path; // Ruta del archivo subido
+
+    // Buscar al usuario
+    const usuario = await Usuario.findById(_id);
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Si el campo 'fotousuario' ya tiene una foto, la reemplazamos. Si no, la agregamos.
+    usuario.fotousuario = fotousuario;
+
+    // Guardamos el usuario actualizado
+    await usuario.save();
+
+    res.json({ message: 'Foto de usuario actualizada correctamente', usuario });
+  } catch (error) {
+    console.error('🔥 Error al actualizar la foto del usuario:', error.message);
+    res.status(500).json({ error: 'Error en el servidor', details: error.message });
+  }
+});
+
 
 
 module.exports = router;

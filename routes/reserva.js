@@ -5,16 +5,10 @@ const Reserva = require('../models/reservaModel');
 // Crear una nueva reserva
 router.post('/crear', async (req, res) => {
   const { idusuario, idespecialista, idhorario, monto, metodopago } = req.body;
-
-  // Validar que el método de pago sea uno de los permitidos
-  const metodosPermitidos = ['billetera terapia', 'pagopar'];
-  if (!metodosPermitidos.includes(metodopago)) {
-      return res.status(400).json({ error: 'Método de pago no válido' });
-  }
-
   const nuevaReserva = new Reserva({
       idusuario,
       idespecialista,
+
       idhorario,
       monto,
       metodopago, // Guarda el método de pago seleccionado
