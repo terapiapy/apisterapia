@@ -93,7 +93,7 @@ router.get('/:id', async (req, res) => {
               path: 'idreserva',
               populate: [
                   { path: 'idusuario', select: 'nombres apellidos' },
-                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista foto especialidad precio rating' },
+                  { path: 'idespecialista', select: 'nombresespecialista apellidosespecialista foto especialidad precio rating experiencia' },
                   { path: 'idhorario', select: 'fecha dia hora' },
               ],
           });
