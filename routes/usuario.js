@@ -3,7 +3,22 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../middlewares/uploads');
 const Usuario = require('../models/usuarioModel');
+const PasswordReset = require('../models/passwordResetModel');
 const jwt = require('jsonwebtoken'); // Para generar el token de autenticación
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+
+// Configura tu transporter (puedes usar Gmail, Mailtrap, etc.)
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'devsvenezuela.gerencia@gmail.com',
+    pass: 'argt ghys nhxk lipr'
+  }
+});
+
+// Mapa temporal para guardar códigos (en producción, guárdalo en MongoDB)
+const resetCodes = new Map();
 
 // Ruta para crear un nuevo usuario (Registro)
 router.post('/register', async (req, res) => {
@@ -30,6 +45,69 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// 1️⃣ Enviar código por email
+router.post('/reset-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const code = crypto.randomInt(100000, 999999).toString();
+    resetCodes.set(email, code);
+
+    await transporter.sendMail({
+      from: 'devsvenezuela.gerencia@gmail.com',
+      to: email,
+      subject: 'Código para resetear contraseña',
+      text: `Tu código es: ${code}`
+    });
+
+    res.json({ message: 'Código enviado al correo electrónico' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 2️⃣ Verificar código
+router.post('/verify-code', (req, res) => {
+  const { email, code } = req.body;
+  const storedCode = resetCodes.get(email);
+
+  if (storedCode === code) {
+    res.json({ message: 'Código válido' });
+  } else {
+    res.status(400).json({ error: 'Código incorrecto' });
+  }
+});
+
+// 3️⃣ Actualizar contraseña
+router.post('/update-password', async (req, res) => {
+  const { email, code, newPassword } = req.body;
+  const storedCode = resetCodes.get(email);
+
+  if (storedCode !== code) {
+    return res.status(400).json({ error: 'Código incorrecto' });
+  }
+
+  try {
+    const usuario = await Usuario.findOne({ email });
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    usuario.password = newPassword;
+    await usuario.save();
+
+    resetCodes.delete(email);
+
+    res.json({ message: 'Contraseña actualizada correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 // Ruta para iniciar sesión (login)
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
